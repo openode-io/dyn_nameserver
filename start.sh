@@ -1,2 +1,2 @@
 
-docker run -d --restart=always -p 53:53 -p 53:53/udp -v $(pwd):/opt/app elixir  iex
+docker run -d --restart=always -p 53:53 -p 53:53/udp --net="host" --env-file=.env  -v $(pwd):/opt/app dyn-nameserver iex

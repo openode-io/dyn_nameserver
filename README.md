@@ -1,5 +1,5 @@
 # DynDns
 
-Dynamic DNS Server.
+Dynamic Nameserver
 
 ## Installation
