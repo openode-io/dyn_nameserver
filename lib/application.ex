@@ -8,7 +8,7 @@ defmodule DynNameserver.Application do
 
     # Define workers and child supervisors to be supervised
     children = [
-      supervisor(DynNameserver.RedixPool, []),
+      supervisor(DynNameserver.Util.RedixPool, []),
       supervisor(DynNameserver.Nameserver, [53])
     ]
 

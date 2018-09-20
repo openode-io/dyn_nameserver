@@ -1,4 +1,4 @@
-defmodule DynNameserver.RedixPool do
+defmodule DynNameserver.Util.RedixPool do
   use Supervisor
 
   @redis_connection_params host: "localhost"

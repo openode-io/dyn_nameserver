@@ -1,5 +1,6 @@
 defmodule DynNameserver.Nameserver do
-  alias DynNameserver.RedixPool, as: Redis
+  alias DynNameserver.Util.RedixPool, as: Redis
+  alias DynNameserver.Util.Ip, as: IpUtil
 
   def prefix_records, do: "dyn--nameserver--"
 
@@ -10,10 +11,6 @@ defmodule DynNameserver.Nameserver do
   @behaviour DNS.Server
   use DNS.Server
 
-  defp s_ip_to_array(ip) do
-    String.split(ip, ".")
-      |> Enum.map(fn elem -> String.to_integer(elem) end)
-  end
 
   defp find_a_record(domain) do
     key_name = "#{prefix_records}#{domain}"
@@ -25,7 +22,7 @@ defmodule DynNameserver.Nameserver do
 
     case result_a_record do
       nil -> nil
-      _ -> s_ip_to_array(result_a_record)
+      _ -> IpUtil.s_ip_to_array(result_a_record)
     end
   end
 
@@ -40,15 +37,20 @@ defmodule DynNameserver.Nameserver do
     IO.puts "record=#{inspect(record)}"
     query = hd(record.qdlist)
 
-    resource = %DNS.Resource{
-      domain: query.domain,
-      class: query.class,
-      type: query.type,
-      ttl: 0,
-      data: find_record(query)
-    }
+    result = find_record(query)
 
-    %{record | anlist: [resource]}
+    case result do
+      nil -> %{record | anlist: []}
+      _ -> resource = %DNS.Resource{
+        domain: query.domain,
+        class: query.class,
+        type: query.type,
+        ttl: 0,
+        data: result
+      }
+      
+      %{record | anlist: [resource]}
+    end
   end
 
 end
