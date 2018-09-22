@@ -39,6 +39,8 @@ defmodule DynNameserver.Nameserver do
 
     result = find_record(query)
 
+    IO.puts "   -> #{inspect(result)}"
+
     case result do
       nil -> %{record | anlist: []}
       _ -> resource = %DNS.Resource{
@@ -48,7 +50,7 @@ defmodule DynNameserver.Nameserver do
         ttl: 0,
         data: result
       }
-      
+
       %{record | anlist: [resource]}
     end
   end
