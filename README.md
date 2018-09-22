@@ -33,6 +33,6 @@ following KEY-VALUE structure:
 dyn--nameserver--<HOSTNAME> -> IP
 ```
 
-This is hard coded currnetly in lib/nameserver.ex.
+This is hard coded currently in lib/nameserver.ex.
 
-Therefore you need another serverice which populate the redis key-values.
+Therefore you need another service which populates the redis key-values.
