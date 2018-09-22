@@ -14,6 +14,7 @@ defmodule DynNameserver.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
+      mod: {DynNameserver.Application, []},
       extra_applications: [:logger]
     ]
   end
