@@ -42,7 +42,7 @@ defmodule DynNameserver.Nameserver do
     IO.puts "   -> #{inspect(result)}"
 
     case result do
-      nil -> %{record | anlist: []}
+      nil -> %{record | anlist: [], header: %{record.header | qr: true}}
       _ -> resource = %DNS.Resource{
         domain: query.domain,
         class: query.class,
@@ -50,8 +50,7 @@ defmodule DynNameserver.Nameserver do
         ttl: 0,
         data: result
       }
-
-      %{record | anlist: [resource]}
+      %{record | anlist: [resource], header: %{record.header | qr: true}}
     end
   end
 
