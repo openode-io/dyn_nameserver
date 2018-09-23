@@ -1,6 +1,6 @@
 # DynNameserver
 
-DynNameserver is a Dynamic Nameserver which a basic DNS server responding to A Record requests.
+DynNameserver is a Dynamic Nameserver which is a basic DNS server responding to A Record requests.
 
 
 ## Installation
