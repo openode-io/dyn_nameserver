@@ -13,7 +13,8 @@ defmodule DynNameserver.Nameserver do
 
 
   defp find_a_record(domain) do
-    key_name = "#{prefix_records}#{String.downcase(domain)}"
+
+    key_name = "#{prefix_records}#{domain}"
 
     result_a_record = case Redis.command(["GET", "#{key_name}"]) do
       {:ok, res} -> res
@@ -28,7 +29,7 @@ defmodule DynNameserver.Nameserver do
 
   defp find_record(query) do
     case query.type do
-      :a -> find_a_record(query.domain)
+      :a -> String.downcase(query.domain) |> find_a_record
       _ -> nil
     end
   end
