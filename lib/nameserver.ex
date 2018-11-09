@@ -48,7 +48,7 @@ defmodule DynNameserver.Nameserver do
     end
 
     type = Atom.to_string(query.type) |> String.upcase
-    allowed_types = ["A", "TXT", "CNAME"] # "AAAA", "MX", 
+    allowed_types = ["A", "TXT", "CNAME"] # "AAAA", "MX",
 
     cond do
       Enum.member?(allowed_types, type) -> find_redis_records(String.downcase(fmt_domain), type)
@@ -68,26 +68,31 @@ defmodule DynNameserver.Nameserver do
   end
 
   def handle(record, _cl) do
-    IO.puts "record=#{inspect(record)}"
-    query = hd(record.qdlist)
+    try do
+      IO.puts "record=#{inspect(record)}"
+      query = hd(record.qdlist)
 
-    results = find_records(query)
+      results = find_records(query)
 
-    IO.puts "   -> #{inspect(results)}"
+      IO.puts "   -> #{inspect(results)}"
 
-    case results do
-      nil -> %{record | anlist: [], header: %{record.header | qr: true}}
-      _ -> resources = Enum.map(results, fn(result) ->
-        %DNS.Resource{
-          domain: query.domain,
-          class: query.class,
-          type: query.type,
-          ttl: 0,
-          data: string_result_to_data_resource(result, query.type)
-        }
-        end)
-      %{record | anlist: resources, header: %{record.header | qr: true}}
+      case results do
+        nil -> %{record | anlist: [], header: %{record.header | qr: true}}
+        _ -> resources = Enum.map(results, fn(result) ->
+          %DNS.Resource{
+            domain: query.domain,
+            class: query.class,
+            type: query.type,
+            ttl: 0,
+            data: string_result_to_data_resource(result, query.type)
+          }
+          end)
+        %{record | anlist: resources, header: %{record.header | qr: true}}
+      end
+    rescue
+      _ -> %{record | anlist: [], header: %{record.header | qr: true}}
     end
+
   end
 
 end
