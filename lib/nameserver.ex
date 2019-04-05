@@ -9,8 +9,36 @@ defmodule DynNameserver.Nameserver do
   Documentation for DynNameserver.
   """
 
-  @behaviour DNS.Server
-  use DNS.Server
+  def start_link(port) do
+    GenServer.start_link(__MODULE__, [port])
+  end
+
+  def init([port]) do
+    socket = Socket.UDP.open!(port, as: :binary, mode: :active)
+    IO.puts("Server listening at #{port}")
+
+    # accept_loop(socket, handler)
+    {:ok, %{port: port, socket: socket}}
+  end
+
+  def handle_info({:udp, client, ip, wtv, data}, state) do
+    record = {:error, :fmt} #DNS.Record.decode(data)
+    IO.puts "allo toto"
+    response = handle(record, client)
+    Socket.Datagram.send!(state.socket, DNS.Record.encode(response), {ip, wtv})
+    {:noreply, state}
+  end
+
+  #@behaviour DNS.Server
+  #use DNS.Server#, except: [handle_info: 2]
+
+  #def handle_info({:udp, client, ip, wtv, data}, state) do
+  #  IO.puts "recorddWHATTTTTTTTTTTTTTTTTTTTTTTTTTTT"
+  #  record = DNS.Record.decode(data)
+  #  response = handle(record, client)
+  #  Socket.Datagram.send!(state.socket, DNS.Record.encode(response), {ip, wtv})
+  #  {:noreply, state}
+  #end
 
   defp extract_redis_result_values(results) do
     Enum.map(results, fn(result) ->
@@ -41,6 +69,7 @@ defmodule DynNameserver.Nameserver do
   end
 
   defp find_records(query) do
+    IO.puts "hello!!"
     fmt_domain = if is_list(query.domain) do
       List.to_string(query.domain)
     else
