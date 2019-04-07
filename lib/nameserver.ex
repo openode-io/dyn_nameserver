@@ -22,23 +22,19 @@ defmodule DynNameserver.Nameserver do
   end
 
   def handle_info({:udp, client, ip, wtv, data}, state) do
-    record = {:error, :fmt} #DNS.Record.decode(data)
-    IO.puts "allo toto"
-    response = handle(record, client)
-    Socket.Datagram.send!(state.socket, DNS.Record.encode(response), {ip, wtv})
-    {:noreply, state}
+    try do
+      record = DNS.Record.decode(data)
+      response = handle(record, client)
+      Socket.Datagram.send!(state.socket, DNS.Record.encode(response), {ip, wtv})
+
+      {:noreply, state}
+    catch
+      _ -> {:noreply, state}
+    end
   end
 
   #@behaviour DNS.Server
   #use DNS.Server#, except: [handle_info: 2]
-
-  #def handle_info({:udp, client, ip, wtv, data}, state) do
-  #  IO.puts "recorddWHATTTTTTTTTTTTTTTTTTTTTTTTTTTT"
-  #  record = DNS.Record.decode(data)
-  #  response = handle(record, client)
-  #  Socket.Datagram.send!(state.socket, DNS.Record.encode(response), {ip, wtv})
-  #  {:noreply, state}
-  #end
 
   defp extract_redis_result_values(results) do
     Enum.map(results, fn(result) ->
