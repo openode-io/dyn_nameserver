@@ -65,7 +65,6 @@ defmodule DynNameserver.Nameserver do
   end
 
   defp find_records(query) do
-    IO.puts "hello!!"
     fmt_domain = if is_list(query.domain) do
       List.to_string(query.domain)
     else
